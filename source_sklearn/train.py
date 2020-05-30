@@ -4,9 +4,13 @@ import argparse
 import os
 import pandas as pd
 
+
 from sklearn.externals import joblib
 
 ## TODO: Import any additional libraries you need to define a model
+from sklearn.gaussian_process import GaussianProcessClassifier # Gaussian Process classifier
+from sklearn.gaussian_process.kernels import RBF # Radial-basis function kernel (aka squared-exponential kernel).
+
 
 
 # Provided model load function
@@ -36,9 +40,11 @@ if __name__ == '__main__':
     # Do not need to change
     parser.add_argument('--output-data-dir', type=str, default=os.environ['SM_OUTPUT_DATA_DIR'])
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
-    parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
+    parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAINING'])
     
     ## TODO: Add any additional arguments that you will need to pass into your model
+    parser.add_argument('--length_scale', type=float, default=1.0)
+    parser.add_argument('--kernel_scaling', type=float, default=1.0)
     
     # args holds all passed-in arguments
     args = parser.parse_args()
@@ -56,11 +62,11 @@ if __name__ == '__main__':
     
 
     ## TODO: Define a model 
-    model = None
+    model = GaussianProcessClassifier(args.kernel_scaling * RBF(args.length_scale ))
     
     
     ## TODO: Train the model
-    
+    model.fit(train_x,train_y)
     
     
     ## --- End of your code  --- ##
